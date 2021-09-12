@@ -18,7 +18,7 @@ type NameMsg struct {
 }
 
 func (m *NameMsg) Encode() string {
-	return fmt.Sprintf("NAME %s", base64.StdEncoding.EncodeToString([]byte(m.Name)))
+	return fmt.Sprintf("NAME %s\n", base64.StdEncoding.EncodeToString([]byte(m.Name)))
 }
 
 type ChatMsg struct {
@@ -28,7 +28,7 @@ type ChatMsg struct {
 
 func (m *ChatMsg) Encode() string {
 	return fmt.Sprintf(
-		"CHAT %s, %s",
+		"CHAT %s, %s\n",
 		base64.StdEncoding.EncodeToString([]byte(m.Name)),
 		base64.StdEncoding.EncodeToString([]byte(m.Words)),
 	)
