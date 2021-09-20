@@ -1,4 +1,4 @@
-package main
+package src
 
 // 定义聊天客户端接口
 
