@@ -19,18 +19,18 @@ func Test_ChatServer(t *testing.T) {
 	server := src.NewChatServer()
 	err := server.Open(port)
 	if err != nil {
-		t.Fatal("server open fail : ", err)
+		t.Fatal(err)
 	}
 
-	clientCount := 1
-
+	clientCount := 3
 	address := fmt.Sprintf("localhost:%v", port)
 	for i := 0; i < clientCount; i++ {
 		err, client := src.DialChatClient(address)
 		if err != nil {
-			t.Fatal("client dial err : ", err)
+			t.Fatal(err)
 		}
-		id := fmt.Sprintf("client id : c%02d", i)
+
+		id := fmt.Sprintf("c%02d", i)
 		client.RecvHandler(func(client src.IChatClient, msg src.IMsg) {
 			t.Logf("%v recv: %v\n", id, msg)
 		})
@@ -68,7 +68,7 @@ func Test_ChatServer(t *testing.T) {
 	server.Close()
 
 	logs := server.GetLogs()
-	fnHadLog := func(log string) bool {
+	fnHasLog := func(log string) bool {
 		for _, it := range logs {
 			if strings.Contains(it, log) {
 				return true
@@ -78,10 +78,10 @@ func Test_ChatServer(t *testing.T) {
 	}
 
 	for i := 0; i < clientCount; i++ {
-		msg := fmt.Sprintf("tChatServer.handleInComingConn, clientCount=%v", i+1)
-		fnAssertTrue(fnHadLog(msg), "expecting log:"+msg)
+		msg := fmt.Sprintf("tChatServer.handleIncomingConn, clientCount=%v", i+1)
+		fnAssertTrue(fnHasLog(msg), "expecting log: "+msg)
 
 		msg = fmt.Sprintf("tChatServer.handleClientClosed, c%02d", i)
-		fnAssertTrue(fnHadLog(msg), "excepting log: "+msg)
+		fnAssertTrue(fnHasLog(msg), "expecting log: "+msg)
 	}
 }
