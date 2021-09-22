@@ -2,47 +2,48 @@ package src
 
 import (
 	"encoding/base64"
-	"errors"
 	"strings"
 )
 
 /*定义消息解码器及其实现*/
 
 type IMsgDecoder interface {
-	Decode(line string) (error, IMsg)
+	Decode(line string) (bool, IMsg)
 }
 
 type tMsgDecoder struct{}
 
-func (m *tMsgDecoder) Decode(line string) (error, IMsg) {
+func (m *tMsgDecoder) Decode(line string) (bool, IMsg) {
 	items := strings.Split(line, " ")
 	size := len(items)
 	if items[0] == "NAME" && size == 2 {
 		name, err := base64.StdEncoding.DecodeString(items[1])
 		if err != nil {
-			return err, nil
+			return false, nil
 		}
 
-		return nil, &NameMsg{
+		return true, &NameMsg{
 			Name: string(name),
 		}
 	}
 	if items[0] == "CHAT" && size == 3 {
 		name, err := base64.StdEncoding.DecodeString(items[1])
 		if err != nil {
-			return err, nil
+			return false, nil
 		}
 
 		words, err := base64.StdEncoding.DecodeString(items[2])
 		if err != nil {
-			return err, nil
+			return false, nil
 		}
-		return nil, &ChatMsg{
+
+		return true, &ChatMsg{
 			Name:  string(name),
 			Words: string(words),
 		}
 	}
-	return errors.New("CAN`T CATCH"), nil
+
+	return false, nil
 }
 
 var MsgDecoder = &tMsgDecoder{}
